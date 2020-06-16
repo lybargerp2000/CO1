@@ -21,14 +21,14 @@ namespace CO.ActionFilters
             var controller = context.RouteData.Values["controller"];
             if (controller.Equals("Home"))
             {
-                if (_claimsPrincipal.IsInRole("Admin"))
+                if (_claimsPrincipal.IsInRole("Associate"))
                 {
-                    context.Result = new RedirectToActionResult("Index", "Admins", null);
+                    context.Result = new RedirectToActionResult("Index", "Associates", null);
                 }
-                else if (_claimsPrincipal.IsInRole("Partner"))
-                {
-                    context.Result = new RedirectToActionResult("Index", "Partners", null);
-                }
+                //else if (_claimsPrincipal.IsInRole("Partner"))
+                //{
+                //    context.Result = new RedirectToActionResult("Index", "Partners", null);
+                //}
             }
         }
 

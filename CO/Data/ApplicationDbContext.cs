@@ -25,6 +25,7 @@ namespace CO.Data
             }
             );
         }
+        public DbSet<Models.Associate> Associates { get; set; }
     }
 
 }
