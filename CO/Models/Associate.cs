@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,10 +10,11 @@ namespace CO.Models
 {
     public class Associate
     {
-        public int Id { get; set; }
+        public int AssociateId { get; set; }
         [ForeignKey("IdentityUser")]
         public string IdentityUserId { get; set; }
         [Display(Name = "First Name")]
+        public IdentityUser IdentityUser { get; set; }
         public string FirstName { get; set; }
         [Display(Name = "Last Name")]
         public string LastName { get; set; }

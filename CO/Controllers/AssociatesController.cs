@@ -12,9 +12,9 @@ namespace CO.Controllers
 {
     public class AssociatesController : Controller
     {
-        private readonly COContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public AssociatesController(COContext context)
+        public AssociatesController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -22,7 +22,8 @@ namespace CO.Controllers
         // GET: Associates
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Associate.ToListAsync());
+            var applicationDbContext = _context.Associates.Include(a => a.IdentityUser);
+            return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Associates/Details/5
@@ -33,8 +34,9 @@ namespace CO.Controllers
                 return NotFound();
             }
 
-            var associate = await _context.Associate
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var associate = await _context.Associates
+                .Include(a => a.IdentityUser)
+                .FirstOrDefaultAsync(m => m.AssociateId == id);
             if (associate == null)
             {
                 return NotFound();
@@ -46,6 +48,7 @@ namespace CO.Controllers
         // GET: Associates/Create
         public IActionResult Create()
         {
+            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -54,7 +57,7 @@ namespace CO.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,IdentityUserId,FirstName,LastName,Description")] Associate associate)
+        public async Task<IActionResult> Create([Bind("AssociateId,IdentityUserId,FirstName,LastName,Description")] Associate associate)
         {
             if (ModelState.IsValid)
             {
@@ -62,6 +65,7 @@ namespace CO.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", associate.IdentityUserId);
             return View(associate);
         }
 
@@ -73,11 +77,12 @@ namespace CO.Controllers
                 return NotFound();
             }
 
-            var associate = await _context.Associate.FindAsync(id);
+            var associate = await _context.Associates.FindAsync(id);
             if (associate == null)
             {
                 return NotFound();
             }
+            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", associate.IdentityUserId);
             return View(associate);
         }
 
@@ -86,9 +91,9 @@ namespace CO.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,IdentityUserId,FirstName,LastName,Description")] Associate associate)
+        public async Task<IActionResult> Edit(int id, [Bind("AssociateId,IdentityUserId,FirstName,LastName,Description")] Associate associate)
         {
-            if (id != associate.Id)
+            if (id != associate.AssociateId)
             {
                 return NotFound();
             }
@@ -102,7 +107,7 @@ namespace CO.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AssociateExists(associate.Id))
+                    if (!AssociateExists(associate.AssociateId))
                     {
                         return NotFound();
                     }
@@ -113,6 +118,7 @@ namespace CO.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", associate.IdentityUserId);
             return View(associate);
         }
 
@@ -124,8 +130,9 @@ namespace CO.Controllers
                 return NotFound();
             }
 
-            var associate = await _context.Associate
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var associate = await _context.Associates
+                .Include(a => a.IdentityUser)
+                .FirstOrDefaultAsync(m => m.AssociateId == id);
             if (associate == null)
             {
                 return NotFound();
@@ -139,15 +146,15 @@ namespace CO.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var associate = await _context.Associate.FindAsync(id);
-            _context.Associate.Remove(associate);
+            var associate = await _context.Associates.FindAsync(id);
+            _context.Associates.Remove(associate);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool AssociateExists(int id)
         {
-            return _context.Associate.Any(e => e.Id == id);
+            return _context.Associates.Any(e => e.AssociateId == id);
         }
     }
 }

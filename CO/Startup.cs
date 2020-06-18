@@ -45,8 +45,7 @@ namespace CO
             services.AddControllersWithViews();
             services.AddRazorPages();
 
-            services.AddDbContext<COContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("COContext")));
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
