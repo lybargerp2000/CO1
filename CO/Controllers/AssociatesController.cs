@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CO.Data;
 using CO.Models;
+using System.Security.Claims;
 
 namespace CO.Controllers
 {
@@ -22,8 +23,10 @@ namespace CO.Controllers
         // GET: Associates
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Associates.Include(a => a.IdentityUser);
-            return View(await applicationDbContext.ToListAsync());
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var viewerInDb = _context.Associates.Where(m => m.IdentityUserId == userId);
+            //var applicationDbContext = _context.Associates.Include(a => a.IdentityUser);
+            return View(await viewerInDb.ToListAsync());
         }
 
         // GET: Associates/Details/5
@@ -61,6 +64,8 @@ namespace CO.Controllers
         {
             if (ModelState.IsValid)
             {
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                associate.IdentityUserId = userId;
                 _context.Add(associate);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
