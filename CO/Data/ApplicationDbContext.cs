@@ -20,8 +20,8 @@ namespace CO.Data
             .HasData(
             new IdentityRole
             {
-                Name = "Asociate",
-                NormalizedName = "ASOCIATE"
+                Name = "Associate",
+                NormalizedName = "ASSOCIATE"
             }
             );
         }
